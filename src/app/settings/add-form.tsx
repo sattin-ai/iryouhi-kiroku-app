@@ -2,14 +2,16 @@
 
 import { useActionState } from "react";
 import { addFamilyMember, type FormState } from "./actions";
+import { useActivity } from "./activity";
 
 const initialState: FormState = {};
 
 export function AddForm() {
   const [state, formAction, pending] = useActionState(addFamilyMember, initialState);
+  const { claim, touch, isLatest } = useActivity();
 
   return (
-    <form action={formAction} className="flex flex-col gap-2">
+    <form action={formAction} onSubmit={claim} className="flex flex-col gap-2">
       <label htmlFor="new-name" className="text-sm font-medium">
         名前を追加
       </label>
@@ -20,6 +22,7 @@ export function AddForm() {
           id="new-name"
           name="name"
           defaultValue={state.value ?? ""}
+          onChange={touch}
           placeholder="例：山田 花子"
           className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2"
         />
@@ -31,7 +34,9 @@ export function AddForm() {
           追加する
         </button>
       </div>
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && isLatest && (
+        <p className="text-sm text-red-600">{state.error}</p>
+      )}
     </form>
   );
 }

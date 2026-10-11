@@ -6,6 +6,7 @@ import {
   updateFamilyMember,
   type FormState,
 } from "./actions";
+import { useActivity } from "./activity";
 
 const initialState: FormState = {};
 
@@ -13,6 +14,8 @@ type Props = { id: string; name: string };
 
 export function MemberRow({ id, name }: Props) {
   const [editing, setEditing] = useState(false);
+  const updateActivity = useActivity();
+  const deleteActivity = useActivity();
 
   const [updateState, updateAction, updating] = useActionState(
     async (prev: FormState, formData: FormData) => {
@@ -28,15 +31,26 @@ export function MemberRow({ id, name }: Props) {
   );
 
   if (editing) {
+    // 前回の保存が失敗したまま別の操作をした場合は、元の名前から編集し直す
+    const draft =
+      updateActivity.isLatest && updateState.value != null
+        ? updateState.value
+        : name;
+
     return (
       <li className="py-3">
-        <form action={updateAction} className="flex flex-col gap-2">
+        <form
+          action={updateAction}
+          onSubmit={updateActivity.claim}
+          className="flex flex-col gap-2"
+        >
           <input type="hidden" name="id" value={id} />
           <div className="flex gap-2">
             <input
               key={updateState.key}
               name="name"
-              defaultValue={updateState.value ?? name}
+              defaultValue={draft}
+              onChange={updateActivity.touch}
               aria-label="名前"
               autoFocus
               className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2"
@@ -50,13 +64,16 @@ export function MemberRow({ id, name }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => setEditing(false)}
+              onClick={() => {
+                updateActivity.touch();
+                setEditing(false);
+              }}
               className="shrink-0 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             >
               キャンセル
             </button>
           </div>
-          {updateState.error && (
+          {updateState.error && updateActivity.isLatest && (
             <p className="text-sm text-red-600">{updateState.error}</p>
           )}
         </form>
@@ -70,7 +87,10 @@ export function MemberRow({ id, name }: Props) {
         <span className="min-w-0 flex-1 truncate">{name}</span>
         <button
           type="button"
-          onClick={() => setEditing(true)}
+          onClick={() => {
+            updateActivity.touch();
+            setEditing(true);
+          }}
           className="shrink-0 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm"
         >
           修正
@@ -78,7 +98,11 @@ export function MemberRow({ id, name }: Props) {
         <form
           action={deleteAction}
           onSubmit={(e) => {
-            if (!window.confirm(`「${name}」を削除しますか？`)) e.preventDefault();
+            if (!window.confirm(`「${name}」を削除しますか？`)) {
+              e.preventDefault();
+              return;
+            }
+            deleteActivity.claim();
           }}
         >
           <input type="hidden" name="id" value={id} />
@@ -91,7 +115,7 @@ export function MemberRow({ id, name }: Props) {
           </button>
         </form>
       </div>
-      {deleteState.error && (
+      {deleteState.error && deleteActivity.isLatest && (
         <p className="mt-1 text-sm text-red-600">{deleteState.error}</p>
       )}
     </li>
