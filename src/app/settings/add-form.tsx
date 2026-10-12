@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { addFamilyMember, type FormState } from "./actions";
-import { useActivity } from "./activity";
+import { useActivity } from "@/components/activity";
 
 const initialState: FormState = {};
 

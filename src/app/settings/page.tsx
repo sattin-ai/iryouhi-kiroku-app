@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/supabase/dal";
 import { createClient } from "@/lib/supabase/server";
-import { ActivityProvider } from "./activity";
+import { ActivityProvider } from "@/components/activity";
 import { AddForm } from "./add-form";
 import { MemberRow } from "./member-row";
 
