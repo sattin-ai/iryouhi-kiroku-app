@@ -8,7 +8,7 @@ const initialState: FormState = {};
 
 export function AddForm() {
   const [state, formAction, pending] = useActionState(addFamilyMember, initialState);
-  const { claim, touch, isLatest } = useActivity();
+  const { claim, touch, isLatest } = useActivity(state);
 
   return (
     <form action={formAction} onSubmit={claim} className="flex flex-col gap-2">

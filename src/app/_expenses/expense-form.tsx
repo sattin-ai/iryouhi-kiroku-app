@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useRef, useState, type ReactNode } from "react";
 import { useActivity } from "@/components/activity";
 import type {
   ExpenseField,
@@ -33,26 +33,40 @@ export function ExpenseForm({
   const [showReimbursement, setShowReimbursement] = useState(
     initialValues.reimbursement !== "",
   );
-  const { claim, touch, isLatest } = useActivity();
+  // 保存中かどうか。ボタンの無効化が画面に反映される前の素早い2回目の押下も止めるため、
+  // 画面の再描画を待たずにすぐ切り替わる ref で持つ
+  const submitting = useRef(false);
 
   const [state, formAction, pending] = useActionState(
     async (prev: ExpenseFormState, formData: FormData) => {
-      const result = await action(prev, formData);
-      // 保存できたら補填金額の欄を閉じる（入力欄を空に戻す）
-      if (result.ok) setShowReimbursement(false);
-      return result;
+      try {
+        const result = await action(prev, formData);
+        // 保存できたら補填金額の欄を閉じる（入力欄を空に戻す）
+        if (result.ok) setShowReimbursement(false);
+        return result;
+      } finally {
+        submitting.current = false;
+      }
     },
     {},
   );
+  const { claim, touch, isLatest } = useActivity(state);
 
   const values = state.values ?? initialValues;
-  // ほかの操作をしたあとは古いメッセージを出さない
+  // ほかの操作をしたあと・保存中は古いメッセージを出さない
   const errors = isLatest ? (state.errors ?? {}) : {};
 
   return (
     <form
       action={formAction}
-      onSubmit={claim}
+      onSubmit={(e) => {
+        if (submitting.current) {
+          e.preventDefault();
+          return;
+        }
+        submitting.current = true;
+        claim();
+      }}
       onChange={touch}
       noValidate
       className="flex flex-col gap-4"
@@ -146,7 +160,7 @@ export function ExpenseForm({
         disabled={pending}
         className="rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white disabled:opacity-60"
       >
-        {pending ? "保存しています…" : submitLabel}
+        {pending ? "保存中…" : submitLabel}
       </button>
 
       {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}

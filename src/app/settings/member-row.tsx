@@ -14,8 +14,6 @@ type Props = { id: string; name: string };
 
 export function MemberRow({ id, name }: Props) {
   const [editing, setEditing] = useState(false);
-  const updateActivity = useActivity();
-  const deleteActivity = useActivity();
 
   const [updateState, updateAction, updating] = useActionState(
     async (prev: FormState, formData: FormData) => {
@@ -29,6 +27,8 @@ export function MemberRow({ id, name }: Props) {
     deleteFamilyMember,
     initialState,
   );
+  const updateActivity = useActivity(updateState);
+  const deleteActivity = useActivity(deleteState);
 
   if (editing) {
     // 前回の保存が失敗したまま別の操作をした場合は、元の名前から編集し直す
