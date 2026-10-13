@@ -26,6 +26,9 @@ export default async function Home() {
           <Link href="/list" className="underline">
             一覧
           </Link>
+          <Link href="/total" className="underline">
+            合計
+          </Link>
           <Link href="/settings" className="underline">
             設定
           </Link>

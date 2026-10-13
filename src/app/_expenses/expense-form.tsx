@@ -129,6 +129,7 @@ export function ExpenseForm({
           <Field
             id="reimbursement"
             label="保険などで補填される金額（円・任意）"
+            hint="受け取った金額をそのまま入力してください。支払った金額を超えた分は、合計の計算で自動的に除きます"
             error={errors.reimbursement}
           >
             <input
@@ -176,11 +177,13 @@ export function ExpenseForm({
 function Field({
   id,
   label,
+  hint,
   error,
   children,
 }: {
   id: ExpenseField;
   label: string;
+  hint?: string;
   error?: string;
   children: ReactNode;
 }) {
@@ -190,6 +193,7 @@ function Field({
         {label}
       </label>
       {children}
+      {hint && <p className="text-xs text-zinc-500">{hint}</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

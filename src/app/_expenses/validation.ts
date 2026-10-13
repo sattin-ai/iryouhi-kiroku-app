@@ -109,9 +109,10 @@ export function parseExpenseForm(
       errors.reimbursement = "補填金額は数字で入力してください";
     } else if (parsed > MAX_YEN) {
       errors.reimbursement = "補填金額は1,000万円以下で入力してください";
-    } else if (amount !== null && !errors.amount && parsed > amount) {
-      errors.reimbursement = "補填金額は支払った金額以下にしてください";
     } else {
+      // 支払った金額より大きくてもよい（入院給付金など）。
+      // 差し引くのはその医療費の分までなので、合計の計算（src/lib/totals.ts）で上限をかける
+
       reimbursement = parsed;
     }
   }

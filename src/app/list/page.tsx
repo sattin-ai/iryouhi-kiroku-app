@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { YearTabs } from "@/components/year-tabs";
 import { todayInTokyo } from "@/lib/date";
+import { selectYear, yearOptions } from "@/lib/years";
 import { formatDayWithWeekday, formatMonthHeading, formatYen } from "@/lib/format";
 import { requireUser } from "@/lib/supabase/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -38,12 +40,9 @@ export default async function ListPage({ searchParams }: PageProps<"/list">) {
 
   // 年の切り替え：記録がある年と今年を、新しい順に並べる
   const thisYear = todayInTokyo().slice(0, 4);
-  const years = [...new Set([thisYear, ...rows.map((r) => r.paid_on.slice(0, 4))])]
-    .sort()
-    .reverse();
+  const years = yearOptions(rows.map((r) => r.paid_on), thisYear);
   const { year: yearParam } = await searchParams;
-  const selectedYear =
-    typeof yearParam === "string" && years.includes(yearParam) ? yearParam : thisYear;
+  const selectedYear = selectYear(yearParam, years, thisYear);
 
   // 選んだ年の記録を月ごとにまとめる（rows は日付の古い順に並んでいる）
   const months = new Map<string, Row[]>();
@@ -78,22 +77,7 @@ export default async function ListPage({ searchParams }: PageProps<"/list">) {
         </div>
       ) : (
         <>
-          <nav aria-label="年の切り替え" className="mt-4 flex flex-wrap gap-2">
-            {years.map((y) => (
-              <Link
-                key={y}
-                href={`/list?year=${y}`}
-                aria-current={y === selectedYear ? "page" : undefined}
-                className={
-                  y === selectedYear
-                    ? "rounded-full bg-zinc-900 px-3 py-1 text-sm font-medium text-white"
-                    : "rounded-full border border-zinc-300 bg-white px-3 py-1 text-sm"
-                }
-              >
-                {y}年
-              </Link>
-            ))}
-          </nav>
+          <YearTabs years={years} selected={selectedYear} basePath="/list" />
 
           {months.size === 0 ? (
             <p className="mt-4 rounded-2xl bg-white p-4 text-sm shadow-sm">
