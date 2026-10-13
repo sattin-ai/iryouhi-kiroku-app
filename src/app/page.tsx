@@ -23,6 +23,9 @@ export default async function Home() {
       <header className="flex items-center justify-between gap-2">
         <h1 className="text-xl font-semibold">領収書の入力</h1>
         <div className="flex items-center gap-3 text-sm">
+          <Link href="/list" className="underline">
+            一覧
+          </Link>
           <Link href="/settings" className="underline">
             設定
           </Link>
