@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/supabase/dal";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeText } from "@/lib/text";
 
 export type FormState = {
   ok?: boolean;
@@ -18,7 +19,8 @@ const MAX_NAME_LENGTH = 30;
 const FOREIGN_KEY_VIOLATION = "23503";
 
 function validateName(raw: string): string | { error: string } {
-  const name = raw.trim();
+  // 全角英数字を半角にするなど、表記をそろえてから重複を調べ、保存する
+  const name = normalizeText(raw);
   if (!name) return { error: "名前を入力してください" };
   if (name.length > MAX_NAME_LENGTH) {
     return { error: `名前は${MAX_NAME_LENGTH}文字以内で入力してください` };

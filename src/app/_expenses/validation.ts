@@ -1,4 +1,5 @@
 import { isValidDateString } from "@/lib/date";
+import { normalizeText } from "@/lib/text";
 
 export const EXPENSE_FIELDS = [
   "family_member_id",
@@ -75,13 +76,14 @@ export function parseExpenseForm(
   if (!paidOn) {
     errors.paid_on = "日付を入力してください";
   } else if (!isValidDateString(paidOn)) {
-    errors.paid_on = "日付が正しくありません";
+    errors.paid_on = "日付を正しく入力してください";
   } else if (paidOn > today) {
     // YYYY-MM-DD 同士は文字列のまま大小を比べられる
     errors.paid_on = "未来の日付は選べません";
   }
 
-  const payee = values.payee.trim();
+  // 全角英数字を半角にするなど、表記をそろえてから保存する
+  const payee = normalizeText(values.payee);
   if (!payee) {
     errors.payee = "支払先を入力してください";
   } else if (payee.length > MAX_PAYEE_LENGTH) {

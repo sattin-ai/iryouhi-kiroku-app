@@ -17,7 +17,7 @@ export function LoginButton() {
     });
     // 成功時は Google の画面へ移動するので、ここに来るのは失敗時だけ
     if (error) {
-      setError("ログインを開始できませんでした。もう一度お試しください。");
+      setError("ログインを開始できませんでした。もう一度お試しください");
       setLoading(false);
     }
   }

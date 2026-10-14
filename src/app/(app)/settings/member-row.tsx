@@ -7,6 +7,7 @@ import {
   type FormState,
 } from "./actions";
 import { useActivity } from "@/components/activity";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 const initialState: FormState = {};
 
@@ -95,25 +96,18 @@ export function MemberRow({ id, name }: Props) {
         >
           修正
         </button>
-        <form
+        <ConfirmDialog
+          title="この名前を削除しますか？"
+          detail={name}
           action={deleteAction}
-          onSubmit={(e) => {
-            if (!window.confirm(`「${name}」を削除しますか？`)) {
-              e.preventDefault();
-              return;
-            }
-            deleteActivity.claim();
-          }}
+          pending={deleting}
+          onConfirm={deleteActivity.claim}
+          triggerLabel="削除"
+          pendingLabel="削除中…"
+          triggerClassName="shrink-0 rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-700 disabled:opacity-60"
         >
           <input type="hidden" name="id" value={id} />
-          <button
-            type="submit"
-            disabled={deleting}
-            className="shrink-0 rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-700 disabled:opacity-60"
-          >
-            削除
-          </button>
-        </form>
+        </ConfirmDialog>
       </div>
       {deleteState.error && deleteActivity.isLatest && (
         <p className="mt-1 text-sm text-red-600">{deleteState.error}</p>

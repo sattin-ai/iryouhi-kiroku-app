@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { YearTabs } from "@/components/year-tabs";
 import { todayInTokyo } from "@/lib/date";
@@ -6,6 +7,8 @@ import { requireUser } from "@/lib/supabase/dal";
 import { createClient } from "@/lib/supabase/server";
 import { summarizeExpenses } from "@/lib/totals";
 import { selectYear, yearOptions } from "@/lib/years";
+
+export const metadata: Metadata = { title: "年間合計" };
 
 export default async function TotalPage({ searchParams }: PageProps<"/total">) {
   const user = await requireUser();
@@ -28,10 +31,7 @@ export default async function TotalPage({ searchParams }: PageProps<"/total">) {
 
   return (
     <main className="mx-auto w-full max-w-md flex-1 p-4">
-      <Link href="/" className="text-sm text-zinc-600 underline">
-        ← 入力へ戻る
-      </Link>
-      <h1 className="mt-3 text-xl font-semibold">年間合計</h1>
+      <h1 className="text-xl font-semibold">年間合計</h1>
 
       {error ? (
         <p className="mt-4 text-sm text-red-600">

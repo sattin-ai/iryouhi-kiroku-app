@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ActivityProvider } from "@/components/activity";
 import { todayInTokyo } from "@/lib/date";
@@ -7,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { deleteExpense, updateExpense } from "@/app/_expenses/actions";
 import { ExpenseForm } from "@/app/_expenses/expense-form";
 import { DeleteButton } from "./delete-button";
+
+export const metadata: Metadata = { title: "記録の編集" };
 
 export default async function EditExpensePage({
   params,

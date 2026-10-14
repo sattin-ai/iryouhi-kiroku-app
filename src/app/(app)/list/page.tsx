@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { YearTabs } from "@/components/year-tabs";
 import { todayInTokyo } from "@/lib/date";
@@ -13,6 +14,8 @@ type Row = {
   amount: number;
   memberName: string;
 };
+
+export const metadata: Metadata = { title: "一覧表" };
 
 export default async function ListPage({ searchParams }: PageProps<"/list">) {
   const user = await requireUser();
@@ -56,10 +59,7 @@ export default async function ListPage({ searchParams }: PageProps<"/list">) {
 
   return (
     <main className="mx-auto w-full max-w-md flex-1 p-4">
-      <Link href="/" className="text-sm text-zinc-600 underline">
-        ← 入力へ戻る
-      </Link>
-      <h1 className="mt-3 text-xl font-semibold">一覧表</h1>
+      <h1 className="text-xl font-semibold">一覧表</h1>
 
       {error ? (
         <p className="mt-4 text-sm text-red-600">

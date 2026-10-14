@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "医療費記録アプリ",
+  // 各ページの title が「一覧表｜医療費記録アプリ」のようにタブに出る
+  title: { template: "%s｜医療費記録アプリ", default: "医療費記録アプリ" },
   description: "確定申告のための医療費記録アプリ",
 };
 
